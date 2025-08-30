@@ -2,6 +2,7 @@
   "name": "devnovate-frontend",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "description": "Devnovate Blogging Platform Frontend (Vite + React)",
   "scripts": {
     "dev": "vite",
