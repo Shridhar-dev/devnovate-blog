@@ -73,6 +73,36 @@ router.get("/trending", async (_req, res) => {
   }
 })
 
+// Add per-user posts endpoint (profile page)
+router.get("/mine", authenticate, async (req, res) => {
+  try {
+    const { sort = "latest", status = "published", page = 1, limit = 10 } = req.query
+
+    const filter = {
+      author: req.user._id,
+      ...(status === "all" ? {} : { status }),
+    }
+
+    const options = {
+      skip: (Number(page) - 1) * Number(limit),
+      limit: Math.min(Number(limit), 50),
+      sort: sort === "trending" ? { likesCount: -1, commentsCount: -1, createdAt: -1 } : { createdAt: -1 },
+    }
+
+    const posts = await Post.find(filter)
+      .sort(options.sort)
+      .skip(options.skip)
+      .limit(options.limit)
+      .select("title slug createdAt likesCount commentsCount") // keep list lightweight
+      .populate("author", "name")
+
+    const total = await Post.countDocuments(filter)
+    res.json({ posts, page: Number(page), total })
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch your posts" })
+  }
+})
+
 // Get single post by slug
 router.get("/:slug", authenticateOptional, async (req, res) => {
   try {
