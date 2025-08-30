@@ -1,9 +1,28 @@
+
 import { Router } from "express"
 import Post from "../models/Post.js"
 import { authenticate } from "../middleware/auth.js"
 import slugify from "slugify"
 
 const router = Router()
+
+// Admin: Approve a blog post (set status to published)
+router.post("/:id/approve", authenticate, async (req, res) => {
+  try {
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ error: "Forbidden" })
+    }
+    const post = await Post.findById(req.params.id)
+    if (!post) return res.status(404).json({ error: "Post not found" })
+    post.status = "published"
+    await post.save()
+    res.json({ success: true, post })
+  } catch (err) {
+    res.status(500).json({ error: "Failed to approve post" })
+  }
+})
+
+
 
 // helper to ensure unique slugs
 const uniqueSlug = async (title) => {
@@ -34,7 +53,7 @@ router.post("/", authenticate, async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { q, page = 1, limit = 10, sort = "latest" } = req.query
-    const filter = {}
+    const filter = { status: "published" }
     if (q) {
       filter.$text = { $search: q }
     }
@@ -62,7 +81,7 @@ router.get("/", async (req, res) => {
 // Trending shortcut
 router.get("/trending", async (_req, res) => {
   try {
-    const posts = await Post.find({})
+    const posts = await Post.find({ status: "published" })
       .sort({ likesCount: -1, commentsCount: -1, createdAt: -1 })
       .limit(3)
       .select("title slug createdAt likesCount commentsCount likedBy imageUrl")
@@ -104,11 +123,15 @@ router.get("/mine", authenticate, async (req, res) => {
 router.get("/:slug", authenticateOptional, async (req, res) => {
   try {
     const { slug } = req.params
-  const post = await Post.findOne({ slug }).populate("author", "name _id").lean()
+    let post = await Post.findOne({ slug }).populate("author", "name _id").lean()
     if (!post) return res.status(404).json({ error: "Not found" })
-
-  // Always show the post, regardless of status
-
+    // Only allow viewing if published, or if admin
+    if (post.status !== "published") {
+      const viewer = req.user
+      if (!viewer || viewer.role !== "admin") {
+        return res.status(404).json({ error: "Not found" })
+      }
+    }
     res.json({ post })
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch post" })

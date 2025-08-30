@@ -20,8 +20,8 @@ export default function Profile() {
       setError(null)
       try {
         const [latestRes, topRes] = await Promise.all([
-          api(`/posts/mine?sort=latest&limit=3`, { token }),
-          api(`/posts/mine?sort=trending&limit=3`, { token })
+          api(`/posts/mine?sort=latest&limit=3&status=published`, { token }),
+          api(`/posts/mine?sort=trending&limit=3&status=published`, { token })
         ])
         setLatest(latestRes.posts || [])
         setTop(topRes.posts || [])

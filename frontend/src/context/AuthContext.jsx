@@ -34,8 +34,8 @@ export default function AuthProvider({ children }) {
     localStorage.setItem("token", data.token)
     setUser(data.user)
   }
-  const signup = async (name, email, password) => {
-    const data = await api("/auth/signup", { method: "POST", body: { name, email, password } })
+  const signup = async (name, email, password, isAdmin) => {
+    const data = await api("/auth/signup", { method: "POST", body: { name, email, password, isAdmin } })
     setToken(data.token)
     localStorage.setItem("token", data.token)
     setUser(data.user)

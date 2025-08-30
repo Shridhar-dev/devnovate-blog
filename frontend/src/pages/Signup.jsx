@@ -13,8 +13,9 @@ export default function Signup() {
     e.preventDefault()
     setError("")
     const fd = new FormData(e.currentTarget)
+    const isAdmin = fd.get("isAdmin") === "on"
     try {
-      await signup(fd.get("name"), fd.get("email"), fd.get("password"))
+      await signup(fd.get("name"), fd.get("email"), fd.get("password"), isAdmin)
       nav("/")
     } catch (err) {
       setError(err.message)
@@ -34,6 +35,12 @@ export default function Signup() {
         </div>
         <div style={{ marginBottom: 16 }}>
           <input name="password" type="password" required placeholder="Password" className="input" />
+        </div>
+        <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center' }}>
+          <input id="isAdmin" type="checkbox" name="isAdmin" style={{ marginRight: 10, width: 18, height: 18 }} />
+          <label htmlFor="isAdmin" style={{ fontSize: 17, fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}>
+            Sign up as <span style={{ color: '#3a86ff', fontWeight: 700 }}>admin</span>
+          </label>
         </div>
         <button className="button">Sign up</button>
       </form>

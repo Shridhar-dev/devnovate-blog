@@ -13,7 +13,7 @@ const issueToken = (user) => {
 
 router.post("/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body
+    const { name, email, password, isAdmin } = req.body
     if (!name || !email || !password) return res.status(400).json({ error: "Missing fields" })
     const exists = await User.findOne({ email })
     if (exists) return res.status(400).json({ error: "Email already in use" })
@@ -22,11 +22,14 @@ router.post("/signup", async (req, res) => {
     const hash = await bcrypt.hash(password, salt)
 
     let role = "user"
-    const adminEmails = (process.env.ADMIN_EMAILS || "")
-      .split(",")
-      .map((e) => e.trim().toLowerCase())
-      .filter(Boolean)
-    if (adminEmails.includes(email.toLowerCase())) role = "admin"
+    if (isAdmin) role = "admin"
+    else {
+      const adminEmails = (process.env.ADMIN_EMAILS || "")
+        .split(",")
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean)
+      if (adminEmails.includes(email.toLowerCase())) role = "admin"
+    }
 
     const user = await User.create({ name, email, password: hash, role })
     const token = issueToken(user)

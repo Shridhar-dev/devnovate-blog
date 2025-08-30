@@ -64,10 +64,22 @@ export default function PostDetail() {
         <p className="muted">
           By {post.author?.name} · {new Date(post.createdAt).toLocaleDateString()}
         </p>
-        <div className="article-actions">
+        <div className="article-actions" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button className="button ghost" onClick={toggleLike}>
             ♥ {post.likesCount}
           </button>
+          {user?.role === 'admin' && post.status === 'pending' && (
+            <button
+              className="button"
+              style={{ background: '#3a86ff', color: '#fff' }}
+              onClick={async () => {
+                await api(`/admin/${post._id}/approve`, { method: 'PATCH', token })
+                window.location.reload()
+              }}
+            >
+              Approve
+            </button>
+          )}
         </div>
         <div className="prose">
           <ReactMarkdown>{post.content}</ReactMarkdown>
