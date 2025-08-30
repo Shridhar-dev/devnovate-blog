@@ -66,74 +66,80 @@ export default function Profile() {
   }
 
   return (
-    <main className="container">
-      <header className="section">
-        <h1 className="title" style={{ marginBottom: 0 }}>
-          {user?.name ? user.name : "Profile"}
-        </h1>
-        <p className="muted" style={{ marginTop: 4, marginBottom: 16 }}>
-          @{user?.email?.split("@")[0] || "user"}
-        </p>
-        <div className="row" style={{ gap: 10, flexWrap: "wrap" }}>
-          <Button asChild>
-            <Link to="/create">Write</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link to="/profile/edit">Edit profile</Link>
-          </Button>
+    <main className="max-w-5xl mx-auto px-4 py-8 animate-fade">
+      <header className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              {user?.name ? user.name : "Profile"}
+            </h1>
+            <p className="text-muted-foreground">
+              @{user?.email?.split("@")[0] || "user"}
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Button asChild className="rounded-xl bg-primary hover:bg-indigo-700 text-center justify-center">
+              <Link to="/create">Write</Link>
+            </Button>
+            <Button variant="outline" asChild className="rounded-xl text-center justify-center">
+              <Link to="/profile/edit">Edit profile</Link>
+            </Button>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive">Delete profile</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete your account?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently remove your profile and all your posts. This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={deleteAccount}>Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="rounded-xl text-center justify-center">Delete profile</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently remove your profile and all your posts. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={deleteAccount}>Delete</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
         {error && (
-          <p role="alert" className="muted" style={{ color: "#111", marginTop: 8 }}>
+          <div className="bg-red-50 text-red-600 p-3 rounded-xl mb-4" role="alert">
             {error}
-          </p>
+          </div>
         )}
       </header>
 
-      <section className="section">
-        <h2 className="subtitle">Your articles</h2>
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-primary">Your Articles</h2>
         {loading ? (
-          <p>Loading…</p>
+          <div className="text-center py-12">
+            <div className="text-lg text-muted-foreground animate-pulse">Loading…</div>
+          </div>
         ) : (
-          <ul className="list">
+          <div className="grid gap-4">
             {mine.map((p) => (
-              <li key={p._id} className="card" style={{ display: "grid", gap: 8 }}>
-                <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                  <div>
-                    <Link to={`/post/${p.slug}`} className="link" style={{ textDecoration: "underline" }}>
-                      <strong>{p.title}</strong>
+              <div key={p._id} className="bg-white rounded-xl shadow-pretty p-6 border-l-4 border-primary">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <Link to={`/post/${p.slug}`} className="text-lg font-semibold text-foreground hover:text-primary transition-colors">
+                      {p.title}
                     </Link>
-                    <div className="muted" style={{ fontSize: 12 }}>
+                    <div className="text-sm text-muted-foreground mt-1">
                       {new Date(p.createdAt).toLocaleString()}
                     </div>
                   </div>
                   <StatusBadge status={p.status} />
                 </div>
-                <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
-                  <Button variant="outline" asChild>
+                <div className="flex gap-3 mt-4">
+                  <Button variant="outline" asChild className="rounded-xl text-center justify-center">
                     <Link to={`/post/${p.slug}/edit`}>Edit</Link>
                   </Button>
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="destructive">Delete</Button>
+                      <Button variant="destructive" className="rounded-xl text-center justify-center">Delete</Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
@@ -149,30 +155,30 @@ export default function Profile() {
                     </AlertDialogContent>
                   </AlertDialog>
                 </div>
-              </li>
+              </div>
             ))}
-            {mine.length === 0 && <p className="muted">No posts yet.</p>}
-          </ul>
+            {mine.length === 0 && <p className="text-muted-foreground text-center py-8">No posts yet.</p>}
+          </div>
         )}
       </section>
 
-      <section className="section">
-        <h2 className="subtitle">Most Liked</h2>
-        <div className="grid">
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-primary">Most Liked</h2>
+        <div className="grid md:grid-cols-2 gap-6">
           {top.map((p) => (
             <PostCard key={p.slug} post={p} />
           ))}
-          {top.length === 0 && !error && <p className="muted">No top posts yet.</p>}
+          {top.length === 0 && !error && <p className="text-muted-foreground text-center py-8">No top posts yet.</p>}
         </div>
       </section>
 
-      <section className="section">
-        <h2 className="subtitle">Latest</h2>
-        <div className="grid">
+      <section>
+        <h2 className="text-2xl font-semibold mb-4 text-primary">Latest</h2>
+        <div className="grid md:grid-cols-2 gap-6">
           {latest.map((p) => (
             <PostCard key={p.slug} post={p} />
           ))}
-          {latest.length === 0 && !error && <p className="muted">No latest posts yet.</p>}
+          {latest.length === 0 && !error && <p className="text-muted-foreground text-center py-8">No latest posts yet.</p>}
         </div>
       </section>
     </main>

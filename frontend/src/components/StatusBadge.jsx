@@ -3,8 +3,8 @@ import { Badge } from "./ui/badge"
 export default function StatusBadge({ status = "pending" }) {
   const map = {
     published: { bg: "var(--foreground)", fg: "var(--background)" },
-    pending: { bg: "rgba(17,24,39,0.08)", fg: "var(--foreground)" },
-    rejected: { bg: "rgba(245, 158, 11, 0.2)", fg: "var(--foreground)" },
+    pending: { bg: "rgba(255, 204, 0, 0.08)", fg: "var(--foreground)" },
+    rejected: { bg: "rgba(255, 0, 0, 0.2)", fg: "var(--foreground)" },
     hidden: { bg: "rgba(17,24,39,0.08)", fg: "var(--foreground)" },
   }
   const s = map[status] || map.pending

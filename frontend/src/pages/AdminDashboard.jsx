@@ -40,14 +40,14 @@ export default function AdminDashboard() {
                 </Link>
               </div>
               <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
-                <Button onClick={() => action(p._id, "approve")}>Approve</Button>
-                <Button variant="outline" onClick={() => action(p._id, "reject")}>
+                <Button onClick={() => action(p._id, "approve")} className="text-center justify-center">Approve</Button>
+                <Button variant="outline" onClick={() => action(p._id, "reject")} className="text-center justify-center"> 
                   Reject
                 </Button>
-                <Button variant="outline" onClick={() => action(p._id, "hide")}>
+                <Button variant="outline" onClick={() => action(p._id, "hide")} className="text-center justify-center"> 
                   Hide
                 </Button>
-                <Button
+                <Button className="text-center justify-center"
                   variant="destructive"
                   onClick={async () => {
                     await api(`/admin/${p._id}`, { method: "DELETE", token })

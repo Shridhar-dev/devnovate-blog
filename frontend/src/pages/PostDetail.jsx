@@ -104,16 +104,16 @@ export default function PostDetail() {
         </p>
 
         <div className="article-actions" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          <Button variant="outline" onClick={toggleLike}>
+          <Button variant="outline" onClick={toggleLike} className="text-center justify-center">
             ♥ {post.likesCount}
           </Button>
           {canEdit && (
             <>
-              <Button onClick={() => nav(`/post/${post.slug}/edit`)}>Edit</Button>
+              <Button onClick={() => nav(`/post/${post.slug}/edit`)} className="text-center justify-center">Edit</Button>
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">Delete</Button>
+                  <Button variant="destructive" className="text-center justify-center">Delete</Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
@@ -134,14 +134,14 @@ export default function PostDetail() {
             <>
               {post.status === "pending" && (
                 <>
-                  <Button onClick={approve}>Approve</Button>
-                  <Button variant="outline" onClick={reject}>
+                  <Button onClick={approve} className="text-center justify-center">Approve</Button>
+                  <Button variant="outline" onClick={reject} className="text-center justify-center">
                     Reject
                   </Button>
                 </>
               )}
               {post.status === "published" && (
-                <Button variant="outline" onClick={hide}>
+                <Button variant="outline" onClick={hide} className="text-center justify-center">
                   Hide
                 </Button>
               )}
@@ -170,7 +170,7 @@ export default function PostDetail() {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
           />
-          <Button type="submit">Post</Button>
+          <Button type="submit" className="text-center justify-center">Post</Button>
         </form>
         <ul className="list">
           {comments.map((c) => (

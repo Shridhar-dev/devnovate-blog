@@ -88,66 +88,77 @@ export default function PostCard({ post }) {
 
   return (
     <Card
-      className="post-card"
+      className="shadow-pretty border-0 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
       role="button"
       tabIndex={0}
       onClick={handleCardClick}
       aria-label={`View details for ${post.title}`}
     >
-      <CardHeader>
-        <CardTitle className="post-card-title" style={{ textDecoration: "underline" }}>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
           {post.title}
         </CardTitle>
-        <div className="post-card-meta" style={{ margin: "4px 0 10px 0" }}>
+        <div className="flex flex-col gap-1 text-sm text-muted-foreground">
           <span>
-            <strong>Author:</strong> {post.author?.name || "Unknown"}
+            <strong className="text-foreground">By:</strong> {post.author?.name || "Unknown"}
           </span>
           <span>
-            <strong>Publish date:</strong> {new Date(post.createdAt).toLocaleDateString()}
+            <strong className="text-foreground">Published:</strong> {new Date(post.createdAt).toLocaleDateString()}
           </span>
         </div>
       </CardHeader>
 
       {excerpt ? (
-        <CardContent>
-          <p className="muted post-card-excerpt">{excerpt}</p>
+        <CardContent className="pb-3">
+          <p className="text-muted-foreground text-sm leading-relaxed">{excerpt}</p>
         </CardContent>
       ) : null}
 
-      <CardFooter style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "stretch" }}>
-        <div className="post-card-actions">
+      <CardFooter className="flex flex-col gap-3">
+        <div className="flex items-center gap-4">
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={handleLike}
             disabled={!token}
             title={liked ? "Unlike" : "Like"}
-            style={{ minWidth: 44, padding: 8 }}
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl hover:bg-red-50 focus:bg-red-50 active:bg-red-100 transition-colors text-center text-gray-700 focus:text-gray-700 active:text-gray-700"
           >
             <LikeIcon filled={liked} />
+            <span className="font-medium">{likes}</span>
           </Button>
-          <span style={{ color: "#111", fontWeight: 600 }}>{likes}</span>
-          <Button variant="outline" type="button" disabled title="Comments" style={{ minWidth: 44, padding: 8 }}>
+          <Button
+            variant="ghost"
+            type="button"
+            disabled
+            title="Comments"
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl hover:bg-blue-50 focus:bg-blue-50 active:bg-blue-100 transition-colors text-center text-gray-700 focus:text-gray-700 active:text-gray-700"
+          >
             <CommentIcon />
+            <span className="font-medium">{comments}</span>
           </Button>
-          <span style={{ color: "#111", fontWeight: 600 }}>{comments}</span>
         </div>
 
-        <Separator />
+        <Separator className="bg-border" />
 
-        <form onClick={(e) => e.stopPropagation()} onSubmit={handleComment} className="post-card-comment-form">
+        <form onClick={(e) => e.stopPropagation()} onSubmit={handleComment} className="flex gap-2">
           <Input
             type="text"
             placeholder="Add a comment..."
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             disabled={commenting}
+            className="flex-1 rounded-xl border-2 focus:border-primary transition-colors"
           />
-          <Button type="submit" disabled={commenting || !commentText.trim()}>
+          <Button
+            type="submit"
+            disabled={commenting || !commentText.trim()}
+            className="px-6 py-3 rounded-xl bg-primary hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-800 transition-colors text-center flex items-center justify-center text-white focus:text-white active:text-white"
+          >
             Post
           </Button>
         </form>
 
-        {error && <p className="error">{error}</p>}
+        {error && <p className="text-red-500 text-sm bg-red-50 p-2 rounded-xl">{error}</p>}
       </CardFooter>
     </Card>
   )

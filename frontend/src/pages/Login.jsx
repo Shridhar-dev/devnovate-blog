@@ -25,25 +25,40 @@ export default function Login() {
   }
 
   return (
-    <main className="container narrow">
-      <Card>
-        <CardHeader>
-          <CardTitle>Login</CardTitle>
+    <main className="flex justify-center items-center min-h-[80vh] px-4 py-8 animate-fade">
+      <Card className="w-full max-w-md shadow-pretty">
+        <CardHeader className="text-center pb-6">
+          <CardTitle className="text-2xl font-bold text-primary">Welcome Back</CardTitle>
+          <p className="text-muted-foreground mt-2">Sign in to your account</p>
         </CardHeader>
         <form onSubmit={onSubmit}>
-          <CardContent className="stack" style={{ display: "grid", gap: 12 }}>
-            {error && <p className="error">{error}</p>}
-            <Input name="email" type="email" required placeholder="Email" />
-            <Input name="password" type="password" required placeholder="Password" />
+          <CardContent className="flex flex-col gap-4">
+            {error && <p className="text-red-500 font-medium text-sm bg-red-50 p-3 rounded-xl">{error}</p>}
+            <Input 
+              name="email" 
+              type="email" 
+              required 
+              placeholder="Email" 
+              className="h-12 rounded-xl border-2 focus:border-primary transition-colors"
+            />
+            <Input 
+              name="password" 
+              type="password" 
+              required 
+              placeholder="Password" 
+              className="h-12 rounded-xl border-2 focus:border-primary transition-colors"
+            />
           </CardContent>
-          <CardFooter style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Button type="submit">Login</Button>
-            <span className="muted" style={{ marginLeft: 8 }}>
-              No account?{" "}
-              <Link to="/signup" className="link">
+          <CardFooter className="flex flex-col gap-4 pt-6">
+            <Button type="submit" className="w-full h-12 rounded-xl bg-primary hover:bg-indigo-700 transition-colors text-center justify-center">
+              Sign In
+            </Button>
+            <p className="text-center text-muted-foreground">
+              Don't have an account?{" "}
+              <Link to="/signup" className="text-primary hover:text-indigo-700 font-medium transition-colors">
                 Sign up
               </Link>
-            </span>
+            </p>
           </CardFooter>
         </form>
       </Card>

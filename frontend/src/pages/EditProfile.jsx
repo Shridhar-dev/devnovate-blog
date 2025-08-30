@@ -32,14 +32,14 @@ export default function EditProfile() {
   }
 
   return (
-    <main className="container narrow">
-      <Card>
-        <CardHeader>
+    <main className="flex justify-center items-center min-h-[60vh] px-4 py-8">
+      <Card className="w-full max-w-md p-6">
+        <CardHeader className="pb-2">
           <CardTitle>Edit profile</CardTitle>
         </CardHeader>
-        <form className="stack" onSubmit={onSubmit}>
-          <CardContent className="stack" style={{ display: "grid", gap: 12 }}>
-            {error && <p className="error">{error}</p>}
+        <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+          <CardContent className="flex flex-col gap-4">
+            {error && <p className="text-red-500 font-medium mb-2">{error}</p>}
             <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
             <Input
               type="password"
@@ -48,8 +48,8 @@ export default function EditProfile() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </CardContent>
-          <CardFooter>
-            <Button disabled={saving} type="submit">
+          <CardFooter className="pt-2">
+            <Button disabled={saving} type="submit" className="w-full py-2 text-center justify-center">
               {saving ? "Saving…" : "Save"}
             </Button>
           </CardFooter>

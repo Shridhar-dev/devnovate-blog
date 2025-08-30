@@ -66,7 +66,7 @@ export default function EditPost() {
             <Textarea rows={12} value={content} onChange={(e) => setContent(e.target.value)} />
           </CardContent>
           <CardFooter>
-            <Button disabled={saving} type="submit">
+            <Button disabled={saving} type="submit" className="text-center justify-center">
               {saving ? "Saving…" : "Save"}
             </Button>
           </CardFooter>
