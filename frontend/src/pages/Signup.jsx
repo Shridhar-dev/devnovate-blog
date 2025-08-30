@@ -26,9 +26,15 @@ export default function Signup() {
       <h1 className="title">Create account</h1>
       <form onSubmit={onSubmit} className="stack">
         {error && <p className="error">{error}</p>}
-        <input name="name" required placeholder="Name" className="input" />
-        <input name="email" type="email" required placeholder="Email" className="input" />
-        <input name="password" type="password" required placeholder="Password" className="input" />
+        <div style={{ marginBottom: 16 }}>
+          <input name="name" required placeholder="Name" className="input" />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <input name="email" type="email" required placeholder="Email" className="input" />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <input name="password" type="password" required placeholder="Password" className="input" />
+        </div>
         <button className="button">Sign up</button>
       </form>
       <p className="muted">

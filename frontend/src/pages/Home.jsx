@@ -10,6 +10,7 @@ export default function Home() {
   const q = searchParams.get("q") || ""
   const [trending, setTrending] = useState([])
   const [posts, setPosts] = useState([])
+  const [allPosts, setAllPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -17,13 +18,19 @@ export default function Home() {
     setLoading(true)
     setError(null)
     try {
-      const [t, p] = await Promise.all([api("/posts/trending"), api(`/posts?q=${encodeURIComponent(q)}&sort=latest`)])
+      const [t, p, all] = await Promise.all([
+        api("/posts/trending"),
+        api(`/posts?q=${encodeURIComponent(q)}&sort=latest`),
+        api("/posts?sort=latest")
+      ])
       setTrending(t.posts || [])
       setPosts(p.posts || [])
+      setAllPosts(all.posts || [])
     } catch (err) {
       setError(err.message || "Failed to load posts")
       setTrending([])
       setPosts([])
+      setAllPosts([])
     } finally {
       setLoading(false)
     }
@@ -81,10 +88,24 @@ export default function Home() {
           <p>Loading…</p>
         ) : (
           <div className="grid">
-            {posts.map((p) => (
+            {posts.slice(0, 3).map((p) => (
               <PostCard key={p.slug} post={p} />
             ))}
             {posts.length === 0 && !error && <p className="muted">No posts found.</p>}
+          </div>
+        )}
+      </section>
+
+      <section className="section">
+        <h2 className="subtitle">All Blogs</h2>
+        {loading ? (
+          <p>Loading…</p>
+        ) : (
+          <div className="grid">
+            {allPosts.map((p) => (
+              <PostCard key={p.slug} post={p} />
+            ))}
+            {allPosts.length === 0 && !error && <p className="muted">No posts found.</p>}
           </div>
         )}
       </section>

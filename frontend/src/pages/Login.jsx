@@ -26,8 +26,12 @@ export default function Login() {
       <h1 className="title">Login</h1>
       <form onSubmit={onSubmit} className="stack">
         {error && <p className="error">{error}</p>}
-        <input name="email" type="email" required placeholder="Email" className="input" />
-        <input name="password" type="password" required placeholder="Password" className="input" />
+        <div style={{ marginBottom: 16 }}>
+          <input name="email" type="email" required placeholder="Email" className="input" />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <input name="password" type="password" required placeholder="Password" className="input" />
+        </div>
         <button className="button">Login</button>
       </form>
       <p className="muted">

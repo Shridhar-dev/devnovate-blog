@@ -8,7 +8,7 @@ export default function Navbar() {
   return (
     <header className="container">
       <div className="nav">
-        <Link to="/" className="brand">
+        <Link to="/" className="brand" style={{ fontSize: '1.5rem', fontWeight: 700 }}>
           Devnovate
         </Link>
         <nav className="links">

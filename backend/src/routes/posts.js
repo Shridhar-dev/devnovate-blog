@@ -19,12 +19,12 @@ const uniqueSlug = async (title) => {
 // Create a post (users => pending, admins => published)
 router.post("/", authenticate, async (req, res) => {
   try {
-    const { title, content } = req.body
-    if (!title || !content) return res.status(400).json({ error: "Missing title or content" })
-    const slug = await uniqueSlug(title)
-    const status = req.user.role === "admin" ? "published" : "pending"
-    const post = await Post.create({ title, content, slug, author: req.user._id, status })
-    res.status(201).json({ post })
+  const { title, content, imageUrl } = req.body
+  if (!title || !content) return res.status(400).json({ error: "Missing title or content" })
+  const slug = await uniqueSlug(title)
+  const status = req.user.role === "admin" ? "published" : "pending"
+  const post = await Post.create({ title, content, slug, author: req.user._id, status, imageUrl })
+  res.status(201).json({ post })
   } catch (err) {
     res.status(500).json({ error: "Failed to create post" })
   }
@@ -34,7 +34,7 @@ router.post("/", authenticate, async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { q, page = 1, limit = 10, sort = "latest" } = req.query
-    const filter = { status: "published" }
+    const filter = {}
     if (q) {
       filter.$text = { $search: q }
     }
@@ -49,7 +49,7 @@ router.get("/", async (req, res) => {
       .sort(options.sort)
       .skip(options.skip)
       .limit(options.limit)
-      .select("title slug createdAt likesCount commentsCount")
+      .select("title slug createdAt likesCount commentsCount likedBy imageUrl")
       .populate("author", "name")
 
     const total = await Post.countDocuments(filter)
@@ -62,10 +62,10 @@ router.get("/", async (req, res) => {
 // Trending shortcut
 router.get("/trending", async (_req, res) => {
   try {
-    const posts = await Post.find({ status: "published" })
+    const posts = await Post.find({})
       .sort({ likesCount: -1, commentsCount: -1, createdAt: -1 })
-      .limit(6)
-      .select("title slug createdAt likesCount commentsCount")
+      .limit(3)
+      .select("title slug createdAt likesCount commentsCount likedBy imageUrl")
       .populate("author", "name")
     res.json({ posts })
   } catch (err) {
@@ -76,24 +76,21 @@ router.get("/trending", async (_req, res) => {
 // Add per-user posts endpoint (profile page)
 router.get("/mine", authenticate, async (req, res) => {
   try {
-    const { sort = "latest", status = "published", page = 1, limit = 10 } = req.query
+    let { sort = "latest", status = "all", page = 1, limit = 10 } = req.query
+    limit = Math.max(1, Math.min(Number(limit), 50))
 
     const filter = {
       author: req.user._id,
       ...(status === "all" ? {} : { status }),
     }
 
-    const options = {
-      skip: (Number(page) - 1) * Number(limit),
-      limit: Math.min(Number(limit), 50),
-      sort: sort === "trending" ? { likesCount: -1, commentsCount: -1, createdAt: -1 } : { createdAt: -1 },
-    }
-
+    const skip = (Number(page) - 1) * limit
+    const sortObj = sort === "trending" ? { likesCount: -1, commentsCount: -1, createdAt: -1 } : { createdAt: -1 }
     const posts = await Post.find(filter)
-      .sort(options.sort)
-      .skip(options.skip)
-      .limit(options.limit)
-      .select("title slug createdAt likesCount commentsCount") // keep list lightweight
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limit)
+      .select("title slug createdAt likesCount commentsCount imageUrl") // keep list lightweight
       .populate("author", "name")
 
     const total = await Post.countDocuments(filter)
@@ -107,16 +104,10 @@ router.get("/mine", authenticate, async (req, res) => {
 router.get("/:slug", authenticateOptional, async (req, res) => {
   try {
     const { slug } = req.params
-    const post = await Post.findOne({ slug }).populate("author", "name _id").lean()
+  const post = await Post.findOne({ slug }).populate("author", "name _id").lean()
     if (!post) return res.status(404).json({ error: "Not found" })
 
-    // show if published; allow author/admin to see non-published
-    if (post.status !== "published") {
-      const viewer = req.user
-      const isOwner = viewer && String(post.author._id) === String(viewer._id)
-      const isAdmin = viewer && viewer.role === "admin"
-      if (!isOwner && !isAdmin) return res.status(404).json({ error: "Not found" })
-    }
+  // Always show the post, regardless of status
 
     res.json({ post })
   } catch (err) {
@@ -131,7 +122,7 @@ router.post("/:id/like", authenticate, async (req, res) => {
     const userId = req.user._id
     const post = await Post.findById(id)
     if (!post) return res.status(404).json({ error: "Post not found" })
-    if (post.status !== "published") return res.status(400).json({ error: "Cannot like unpublished post" })
+  // Allow likes on all posts, not just published
 
     const hasLiked = post.likedBy.some((u) => String(u) === String(userId))
     if (hasLiked) {

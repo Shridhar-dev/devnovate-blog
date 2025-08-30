@@ -10,7 +10,8 @@ export default function Profile() {
   const [mine, setMine] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [sort, setSort] = useState("latest") // 'latest' | 'trending'
+  const [latest, setLatest] = useState([])
+  const [top, setTop] = useState([])
 
   useEffect(() => {
     const load = async () => {
@@ -18,31 +19,29 @@ export default function Profile() {
       setLoading(true)
       setError(null)
       try {
-        const data = await api(`/posts/mine?sort=${encodeURIComponent(sort)}`, { token })
-        setMine(data.posts || [])
+        const [latestRes, topRes] = await Promise.all([
+          api(`/posts/mine?sort=latest&limit=3`, { token }),
+          api(`/posts/mine?sort=trending&limit=3`, { token })
+        ])
+        setLatest(latestRes.posts || [])
+        setTop(topRes.posts || [])
       } catch (err) {
         setError(err.message || "Failed to load your posts")
-        setMine([])
+        setLatest([])
+        setTop([])
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [token, user, sort])
+  }, [token, user])
 
   return (
     <main className="container">
       <header className="section">
-        <h1 className="title">Your articles</h1>
-        <p className="muted">Showing your {sort === "latest" ? "latest" : "top"} published articles.</p>
-        <div className="row" role="tablist" aria-label="Sort posts">
-          <button className="button" aria-pressed={sort === "latest"} onClick={() => setSort("latest")}>
-            Latest
-          </button>
-          <button className="button" aria-pressed={sort === "trending"} onClick={() => setSort("trending")}>
-            Top
-          </button>
-        </div>
+        <h1 className="title" style={{ marginBottom: 0 }}>{user?.name ? user.name : "Profile"}</h1>
+        <p className="muted" style={{ marginTop: 4, marginBottom: 16 }}>@{user?.email?.split("@")[0] || "user"}</p>
+        <h2 className="subtitle">Your articles</h2>
         {error && (
           <p role="alert" className="muted" style={{ color: "crimson" }}>
             {error}
@@ -54,14 +53,26 @@ export default function Profile() {
           <p>Loading…</p>
         </section>
       ) : (
-        <section className="section">
-          <div className="grid">
-            {mine.map((p) => (
-              <PostCard key={p.slug} post={p} />
-            ))}
-            {mine.length === 0 && !error && <p className="muted">You have not published any articles yet.</p>}
-          </div>
-        </section>
+        <>
+          <section className="section">
+            <h2 className="subtitle">Most Liked</h2>
+            <div className="grid">
+              {top.map((p) => (
+                <PostCard key={p.slug} post={p} />
+              ))}
+              {top.length === 0 && !error && <p className="muted">No top posts yet.</p>}
+            </div>
+          </section>
+          <section className="section">
+            <h2 className="subtitle">Latest</h2>
+            <div className="grid">
+              {latest.map((p) => (
+                <PostCard key={p.slug} post={p} />
+              ))}
+              {latest.length === 0 && !error && <p className="muted">No latest posts yet.</p>}
+            </div>
+          </section>
+        </>
       )}
     </main>
   )

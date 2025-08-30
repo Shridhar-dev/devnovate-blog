@@ -41,7 +41,7 @@ export default function CreatePost() {
           required
         />
         <div className="row">
-          <button type="button" className="button ghost" onClick={() => setPreview((p) => !p)}>
+          <button type="button" className="button" onClick={() => setPreview((p) => !p)}>
             {preview ? "Edit" : "Preview"}
           </button>
         </div>
