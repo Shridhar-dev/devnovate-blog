@@ -3,11 +3,10 @@
 
 import { Link } from "react-router-dom"
 import { usePosts, useTrendingPosts } from "@/hooks/usePosts"
-import { SectionTitle, Empty, Badge } from "../components"
+import { SectionTitle, Empty } from "../components"
 import { Navbar } from "../navbar"
 import type { Post } from "@/api/posts"
-import { Button } from "../ui/button"
-import { ArrowRight, MoveRightIcon } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 function BlogCard({ post }: { post: Post }) {
   return (

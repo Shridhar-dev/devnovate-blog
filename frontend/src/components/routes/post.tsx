@@ -7,7 +7,7 @@ import { usePost } from "@/hooks/usePosts"
 import { useComments } from "@/hooks/useComments"
 import { usePostActions } from "@/hooks/usePosts"
 import { useAuth } from "../auth-context"
-import { Empty, Badge } from "../components"
+import { Empty } from "../components"
 import { Button } from "../ui/button"
 import { Textarea } from "../ui/textarea"
 import { Navbar } from "../navbar"
@@ -23,7 +23,7 @@ export default function PostPage() {
   const [commenting, setCommenting] = useState(false)
   const [liking, setLiking] = useState(false)
 
-  const handleLike = async (e) => {
+  const handleLike = async (e:any) => {
     e.preventDefault()
     if (!post || !user) return
     try {

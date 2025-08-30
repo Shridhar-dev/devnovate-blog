@@ -1,5 +1,5 @@
 // api/posts.ts
-const API_BASE_URL = "http://localhost:3000/api"
+const API_BASE_URL = "https://devnovate-blog-90vz.onrender.com/api"
 
 export interface Post {
   _id: string

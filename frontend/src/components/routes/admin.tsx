@@ -2,14 +2,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/components/auth-context"
 import { apiService } from "@/api/posts"
 import AdminLayout from "../admin-layout"
 import { AdminPostsPanel } from "./admin-panel"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { SectionTitle } from "../components"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"

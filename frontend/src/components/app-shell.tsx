@@ -24,7 +24,7 @@ export function AvatarCircle({ name }: { name?: string }) {
 }
 
 function Nav() {
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [q, setQ] = useState("")
 
@@ -69,7 +69,7 @@ function Nav() {
                   <span className="sr-only">Profile</span>
                 </Button>
               </Link>
-              <Button onClick={() => signOut()} className="hidden sm:inline-flex">
+              <Button onClick={() =>{}} className="hidden sm:inline-flex">
                 Sign out
               </Button>
             </>

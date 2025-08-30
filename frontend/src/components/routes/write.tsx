@@ -2,7 +2,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useCallback, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useAuth } from "../auth-context"
 import { useMyPosts, usePostActions } from "@/hooks/usePosts"

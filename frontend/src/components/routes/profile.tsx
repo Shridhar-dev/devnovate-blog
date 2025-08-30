@@ -8,7 +8,7 @@ import { useAuth } from "../auth-context"
 import { useMyPosts } from "@/hooks/usePosts"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
-import { SectionTitle, Empty } from "../components"
+import { SectionTitle } from "../components"
 import AdminLayout from "../admin-layout"
 
 export default function ProfilePage() {

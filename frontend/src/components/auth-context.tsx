@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState("")
 
   const navigate = useNavigate()
-  const API_URL = "http://localhost:3000/api/auth"
+  const API_URL = "https://devnovate-blog-90vz.onrender.com/api/auth"
 
   const getAuthHeaders = () => ({
     "Content-Type": "application/json",

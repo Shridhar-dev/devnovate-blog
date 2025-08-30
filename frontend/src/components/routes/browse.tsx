@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { usePosts } from "@/hooks/usePosts"
-import { SectionTitle, Empty, Badge } from "../components"
+import { SectionTitle, Empty } from "../components"
 import { Navbar } from "../navbar"
 import type { Post } from "@/api/posts"
 import { Button } from "../ui/button"

@@ -40,7 +40,7 @@ export default function SelectionPopup({ editor }: { editor: any }) {
     if (!selectedText) return
     try {
       // 🔥 Call Groq or any LLM API here
-      const response = await fetch("http://localhost:3000/api/ai", {
+      const response = await fetch("https://devnovate-blog-90vz.onrender.com/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: selectedText }),
@@ -59,7 +59,7 @@ export default function SelectionPopup({ editor }: { editor: any }) {
     if (!selectedText) return
     try {
       // 🔥 Call Groq or any LLM API here
-      const response = await fetch("http://localhost:3000/api/ai/increase", {
+      const response = await fetch("https://devnovate-blog-90vz.onrender.com/api/ai/increase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: selectedText }),

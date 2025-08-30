@@ -43,7 +43,7 @@ export default function SearchPage() {
   const [query, setQuery] = useState(searchParams.get("q") || "")
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "")
   
-  const { posts, loading, error, pagination, refetch } = usePosts({ 
+  const { posts, loading, error, refetch } = usePosts({ 
     q: searchQuery,
     limit: 12 
   })

@@ -1,4 +1,4 @@
-import { Calendar, ChartNoAxesColumnIncreasing, Home, Inbox, LogOut, Pencil, Search, Settings, StickyNote, User } from "lucide-react"
+import { ChartNoAxesColumnIncreasing, LogOut, Pencil, StickyNote, User } from "lucide-react"
 
 import {
   Sidebar,
