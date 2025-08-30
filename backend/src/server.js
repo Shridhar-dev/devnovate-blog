@@ -8,6 +8,8 @@ import authRoutes from "./routes/auth.js"
 import postRoutes from "./routes/posts.js"
 import adminRoutes from "./routes/admin.js"
 import commentRoutes from "./routes/comments.js"
+import analyticsRoutes from "./routes/analytics.js"
+import aiRoutes from "./routes/ai.js"
 
 const app = express()
 
@@ -54,6 +56,8 @@ app.use("/api/auth", authRoutes)
 app.use("/api/posts", postRoutes)
 app.use("/api/admin", adminRoutes)
 app.use("/api/comments", commentRoutes)
+app.use("/api/analytics", analyticsRoutes)
+app.use("/api/ai", aiRoutes)
 
 // Not-found handler
 app.use((req, res, next) => {

@@ -51,30 +51,49 @@ router.post("/", authenticate, async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { q, page = 1, limit = 10, sort = "latest" } = req.query
-    const filter = { status: "published" }
-    if (q) {
-      filter.$text = { $search: q }
-    }
 
-    const options = {
-      skip: (Number(page) - 1) * Number(limit),
-      limit: Math.min(Number(limit), 50),
-      sort: sort === "trending" ? { likesCount: -1, commentsCount: -1, createdAt: -1 } : { createdAt: -1 },
-    }
-
-    const posts = await Post.find(filter)
-      .sort(options.sort)
-      .skip(options.skip)
-      .limit(options.limit)
-      .select("title slug createdAt likesCount commentsCount likedBy imageUrl")
+    // Get all published posts
+    const allPosts = await Post.find({ status: "published" })
+      .sort(
+        sort === "trending"
+          ? { likesCount: -1, commentsCount: -1, createdAt: -1 }
+          : { createdAt: -1 }
+      )
+      .select(
+        "title slug createdAt likesCount commentsCount likedBy imageUrl content"
+      )
       .populate("author", "name")
 
-    const total = await Post.countDocuments(filter)
-    res.json({ posts, page: Number(page), total })
+    // Filter in memory if q is provided
+    let filteredPosts = allPosts
+    if (q) {
+      const query = String(q).toLowerCase()
+      filteredPosts = allPosts.filter(
+        (post) =>
+          post.title.toLowerCase().includes(query) ||
+          (post.content && post.content.toLowerCase().includes(query))
+      )
+    }
+    
+    // Pagination
+    const pageNumber = Number(page)
+    const pageSize = Math.min(Number(limit), 50)
+    const paginatedPosts = filteredPosts.slice(
+      (pageNumber - 1) * pageSize,
+      pageNumber * pageSize
+    )
+
+    res.json({
+      posts: paginatedPosts,
+      page: pageNumber,
+      total: filteredPosts.length,
+    })
   } catch (err) {
+    console.error(err)
     res.status(500).json({ error: "Failed to list posts" })
   }
 })
+
 
 // Trending shortcut
 router.get("/trending", async (_req, res) => {
