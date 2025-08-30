@@ -55,7 +55,7 @@ export default function Profile() {
   }, [token, user])
 
   const deleteAccount = async () => {
-    await api(`/users/me`, { method: "DELETE", token })
+    await api(`/auth/me`, { method: "DELETE", token })
     logout()
     nav("/")
   }
