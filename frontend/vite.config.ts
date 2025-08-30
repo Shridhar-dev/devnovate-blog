@@ -11,4 +11,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+    '/api': {
+      target: 'https://devnovate-blog-90vz.onrender.com/api',
+      changeOrigin: true,
+      secure: true,
+      rewrite: (path) => path.replace(/^\/api/, '')
+    }
+    },
+  },
 })
