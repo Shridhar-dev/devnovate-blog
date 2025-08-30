@@ -2,47 +2,64 @@
 
 import { Link, NavLink } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import { Button } from "./ui/button"
 
 export default function Navbar() {
   const { user, logout } = useAuth()
   return (
     <header className="container">
       <div className="nav">
-        <Link to="/" className="brand" style={{ fontSize: '1.5rem', fontWeight: 700 }}>
+        <Link to="/" className="brand" style={{ fontSize: "1.5rem", fontWeight: 700 }}>
           Devnovate
         </Link>
         <nav className="links">
-          <NavLink to="/" className="link">
-            Home
-          </NavLink>
-          {user && (
-            <NavLink to="/create" className="link">
-              Write
+          <Button variant="ghost" asChild>
+            <NavLink to="/" className="link">
+              Home
             </NavLink>
-          )}
+          </Button>
+
           {user && (
-            <NavLink to="/profile" className="link">
-              Profile
-            </NavLink>
+            <Button variant="ghost" asChild>
+              <NavLink to="/create" className="link">
+                Write
+              </NavLink>
+            </Button>
           )}
+
+          {user && (
+            <Button variant="ghost" asChild>
+              <NavLink to="/profile" className="link">
+                Profile
+              </NavLink>
+            </Button>
+          )}
+
           {user?.role === "admin" && (
-            <NavLink to="/admin" className="link">
-              Admin
-            </NavLink>
+            <Button variant="ghost" asChild>
+              <NavLink to="/admin" className="link">
+                Admin
+              </NavLink>
+            </Button>
           )}
+
           {!user ? (
             <>
-              <NavLink to="/login" className="link">
-                Login
-              </NavLink>
-              <NavLink to="/signup" className="link">
-                Signup
-              </NavLink>
+              <Button variant="outline" asChild>
+                <NavLink to="/login" className="link">
+                  Login
+                </NavLink>
+              </Button>
+              <Button variant="default" asChild>
+                <NavLink to="/signup" className="link">
+                  Signup
+                </NavLink>
+              </Button>
             </>
           ) : (
-            <button className="link button-inline" onClick={logout}>
+            <Button variant="outline" onClick={logout}>
               Logout
-            </button>
+            </Button>
           )}
         </nav>
       </div>

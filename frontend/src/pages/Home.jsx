@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { api } from "../api"
 import PostCard from "../components/PostCard"
 import { useSearchParams } from "react-router-dom"
+import { Input } from "../components/ui/input"
+import { Button } from "../components/ui/button"
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -21,7 +23,7 @@ export default function Home() {
       const [t, p, all] = await Promise.all([
         api("/posts/trending"),
         api(`/posts?q=${encodeURIComponent(q)}&sort=latest`),
-        api("/posts?sort=latest")
+        api("/posts?sort=latest"),
       ])
       setTrending(t.posts || [])
       setPosts(p.posts || [])
@@ -51,18 +53,12 @@ export default function Home() {
     <main className="container">
       <section className="section">
         <h1 className="title text-balance">Latest from Devnovate</h1>
-        <form onSubmit={onSubmit} className="row">
-          <input
-            name="q"
-            defaultValue={q}
-            placeholder="Search articles"
-            className="input"
-            aria-label="Search articles"
-          />
-          <button className="button">Search</button>
+        <form onSubmit={onSubmit} className="row" style={{ display: "flex", gap: 8 }}>
+          <Input name="q" defaultValue={q} placeholder="Search articles" aria-label="Search articles" />
+          <Button type="submit">Search</Button>
         </form>
         {error && (
-          <p role="alert" className="muted" style={{ color: "crimson" }}>
+          <p role="alert" className="muted" style={{ color: "#111" }}>
             {error}
           </p>
         )}

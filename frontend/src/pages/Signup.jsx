@@ -3,6 +3,11 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import { Input } from "../components/ui/input"
+import { Button } from "../components/ui/button"
+import { Checkbox } from "../components/ui/checkbox"
+import { Label } from "../components/ui/label"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "../components/ui/card"
 
 export default function Signup() {
   const { signup } = useAuth()
@@ -24,32 +29,32 @@ export default function Signup() {
 
   return (
     <main className="container narrow">
-      <h1 className="title">Create account</h1>
-      <form onSubmit={onSubmit} className="stack">
-        {error && <p className="error">{error}</p>}
-        <div style={{ marginBottom: 16 }}>
-          <input name="name" required placeholder="Name" className="input" />
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          <input name="email" type="email" required placeholder="Email" className="input" />
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          <input name="password" type="password" required placeholder="Password" className="input" />
-        </div>
-        <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center' }}>
-          <input id="isAdmin" type="checkbox" name="isAdmin" style={{ marginRight: 10, width: 18, height: 18 }} />
-          <label htmlFor="isAdmin" style={{ fontSize: 17, fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}>
-            Sign up as <span style={{ color: '#3a86ff', fontWeight: 700 }}>admin</span>
-          </label>
-        </div>
-        <button className="button">Sign up</button>
-      </form>
-      <p className="muted">
-        Have an account?{" "}
-        <Link to="/login" className="link">
-          Log in
-        </Link>
-      </p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Create account</CardTitle>
+        </CardHeader>
+        <form onSubmit={onSubmit}>
+          <CardContent className="stack" style={{ display: "grid", gap: 12 }}>
+            {error && <p className="error">{error}</p>}
+            <Input name="name" required placeholder="Name" />
+            <Input name="email" type="email" required placeholder="Email" />
+            <Input name="password" type="password" required placeholder="Password" />
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Checkbox id="isAdmin" name="isAdmin" />
+              <Label htmlFor="isAdmin">Sign up as admin</Label>
+            </div>
+          </CardContent>
+          <CardFooter style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Button type="submit">Sign up</Button>
+            <span className="muted">
+              Have an account?{" "}
+              <Link to="/login" className="link">
+                Log in
+              </Link>
+            </span>
+          </CardFooter>
+        </form>
+      </Card>
     </main>
   )
 }

@@ -20,3 +20,18 @@ export const requireAdmin = (req, res, next) => {
   if (req.user?.role !== "admin") return res.status(403).json({ error: "Admin only" })
   next()
 }
+
+export const authenticateOptional = (req, _res, next) => {
+  try {
+    const authHeader = req.headers.authorization || ""
+    if (!authHeader.startsWith("Bearer ")) return next()
+    const token = authHeader.slice(7)
+    if (!token) return next()
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+    if (!payload) return next()
+    req.user = { _id: payload.id, role: payload.role }
+    next()
+  } catch {
+    next()
+  }
+}

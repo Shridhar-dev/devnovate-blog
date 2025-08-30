@@ -1,8 +1,8 @@
-
 import { Router } from "express"
 import Post from "../models/Post.js"
-import { authenticate } from "../middleware/auth.js"
+import { authenticate, authenticateOptional } from "../middleware/auth.js"
 import slugify from "slugify"
+import Comment from "../models/Comment.js"
 
 const router = Router()
 
@@ -22,8 +22,6 @@ router.post("/:id/approve", authenticate, async (req, res) => {
   }
 })
 
-
-
 // helper to ensure unique slugs
 const uniqueSlug = async (title) => {
   const base = slugify(title, { lower: true, strict: true })
@@ -38,12 +36,12 @@ const uniqueSlug = async (title) => {
 // Create a post (users => pending, admins => published)
 router.post("/", authenticate, async (req, res) => {
   try {
-  const { title, content, imageUrl } = req.body
-  if (!title || !content) return res.status(400).json({ error: "Missing title or content" })
-  const slug = await uniqueSlug(title)
-  const status = req.user.role === "admin" ? "published" : "pending"
-  const post = await Post.create({ title, content, slug, author: req.user._id, status, imageUrl })
-  res.status(201).json({ post })
+    const { title, content, imageUrl } = req.body
+    if (!title || !content) return res.status(400).json({ error: "Missing title or content" })
+    const slug = await uniqueSlug(title)
+    const status = req.user.role === "admin" ? "published" : "pending"
+    const post = await Post.create({ title, content, slug, author: req.user._id, status, imageUrl })
+    res.status(201).json({ post })
   } catch (err) {
     res.status(500).json({ error: "Failed to create post" })
   }
@@ -123,7 +121,7 @@ router.get("/mine", authenticate, async (req, res) => {
 router.get("/:slug", authenticateOptional, async (req, res) => {
   try {
     const { slug } = req.params
-    let post = await Post.findOne({ slug }).populate("author", "name _id").lean()
+    const post = await Post.findOne({ slug }).populate("author", "name _id").lean()
     if (!post) return res.status(404).json({ error: "Not found" })
     // Only allow viewing if published, or if admin
     if (post.status !== "published") {
@@ -145,7 +143,7 @@ router.post("/:id/like", authenticate, async (req, res) => {
     const userId = req.user._id
     const post = await Post.findById(id)
     if (!post) return res.status(404).json({ error: "Post not found" })
-  // Allow likes on all posts, not just published
+    // Allow likes on all posts, not just published
 
     const hasLiked = post.likedBy.some((u) => String(u) === String(userId))
     if (hasLiked) {
@@ -162,19 +160,62 @@ router.post("/:id/like", authenticate, async (req, res) => {
   }
 })
 
-// Auth-optional middleware
-function authenticateOptional(req, _res, next) {
+// Edit a post (author or admin). Authors cannot edit published posts.
+router.patch("/:id", authenticate, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization || ""
-    if (!authHeader.startsWith("Bearer ")) return next()
-    const token = authHeader.slice(7)
-    const payload = token ? JSON.parse(Buffer.from(token.split(".")[1], "base64").toString("utf8")) : null
-    if (!payload) return next()
-    req.user = { _id: payload.id, role: payload.role }
-    next()
-  } catch {
-    next()
+    const { id } = req.params
+    const { title, content, imageUrl } = req.body
+    const post = await Post.findById(id)
+    if (!post) return res.status(404).json({ error: "Post not found" })
+
+    const isOwner = String(post.author) === String(req.user._id)
+    const isAdmin = req.user.role === "admin"
+    if (!isOwner && !isAdmin) return res.status(403).json({ error: "Forbidden" })
+
+    // Authors cannot edit published posts; admins can.
+    if (post.status === "published" && !isAdmin) {
+      return res.status(400).json({ error: "Published posts cannot be edited by the author" })
+    }
+
+    // Update fields
+    if (typeof title === "string" && title.trim()) {
+      // Only regenerate slug when NOT published to keep URLs stable
+      if (post.status !== "published") {
+        post.slug = await uniqueSlug(title.trim())
+      }
+      post.title = title.trim()
+    }
+    if (typeof content === "string" && content.trim()) {
+      post.content = content.trim()
+    }
+    if (typeof imageUrl === "string") {
+      post.imageUrl = imageUrl
+    }
+
+    await post.save()
+    res.json({ post })
+  } catch (err) {
+    res.status(500).json({ error: "Failed to edit post" })
   }
-}
+})
+
+// Delete a post (author or admin). Also delete related comments.
+router.delete("/:id", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params
+    const post = await Post.findById(id)
+    if (!post) return res.status(404).json({ error: "Post not found" })
+
+    const isOwner = String(post.author) === String(req.user._id)
+    const isAdmin = req.user.role === "admin"
+    if (!isOwner && !isAdmin) return res.status(403).json({ error: "Forbidden" })
+
+    await Comment.deleteMany({ post: id })
+    await Post.findByIdAndDelete(id)
+    res.json({ message: "Post deleted" })
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete post" })
+  }
+})
 
 export default router

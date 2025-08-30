@@ -3,6 +3,9 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import { Input } from "../components/ui/input"
+import { Button } from "../components/ui/button"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "../components/ui/card"
 
 export default function Login() {
   const { login } = useAuth()
@@ -23,23 +26,27 @@ export default function Login() {
 
   return (
     <main className="container narrow">
-      <h1 className="title">Login</h1>
-      <form onSubmit={onSubmit} className="stack">
-        {error && <p className="error">{error}</p>}
-        <div style={{ marginBottom: 16 }}>
-          <input name="email" type="email" required placeholder="Email" className="input" />
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          <input name="password" type="password" required placeholder="Password" className="input" />
-        </div>
-        <button className="button">Login</button>
-      </form>
-      <p className="muted">
-        No account?{" "}
-        <Link to="/signup" className="link">
-          Sign up
-        </Link>
-      </p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+        </CardHeader>
+        <form onSubmit={onSubmit}>
+          <CardContent className="stack" style={{ display: "grid", gap: 12 }}>
+            {error && <p className="error">{error}</p>}
+            <Input name="email" type="email" required placeholder="Email" />
+            <Input name="password" type="password" required placeholder="Password" />
+          </CardContent>
+          <CardFooter style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Button type="submit">Login</Button>
+            <span className="muted" style={{ marginLeft: 8 }}>
+              No account?{" "}
+              <Link to="/signup" className="link">
+                Sign up
+              </Link>
+            </span>
+          </CardFooter>
+        </form>
+      </Card>
     </main>
   )
 }

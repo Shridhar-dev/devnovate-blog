@@ -23,7 +23,9 @@ router.post("/:postId", authenticate, async (req, res) => {
     const { content } = req.body
     if (!content) return res.status(400).json({ error: "Missing content" })
     const post = await Post.findById(postId)
-  if (!post) return res.status(400).json({ error: "Cannot comment on this post" })
+    if (!post || post.status !== "published") {
+      return res.status(400).json({ error: "Cannot comment on this post" })
+    }
 
     const comment = await Comment.create({ post: postId, user: req.user._id, content })
     post.commentsCount += 1

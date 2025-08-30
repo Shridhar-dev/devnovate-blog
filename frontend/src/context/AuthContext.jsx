@@ -46,5 +46,7 @@ export default function AuthProvider({ children }) {
     setUser(null)
   }
 
-  return <AuthCtx.Provider value={{ user, token, login, signup, logout, loading }}>{children}</AuthCtx.Provider>
+  return (
+    <AuthCtx.Provider value={{ user, token, login, signup, logout, loading, setUser }}>{children}</AuthCtx.Provider>
+  )
 }

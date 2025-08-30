@@ -1,13 +1,27 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { api } from "../api"
 import { useAuth } from "../context/AuthContext"
 import ReactMarkdown from "react-markdown"
+import StatusBadge from "../components/StatusBadge"
+import { Button } from "../components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../components/ui/alert-dialog"
 
 export default function PostDetail() {
   const { slug } = useParams()
+  const nav = useNavigate()
   const { token, user } = useAuth()
   const [post, setPost] = useState(null)
   const [comments, setComments] = useState([])
@@ -27,6 +41,7 @@ export default function PostDetail() {
   }
   useEffect(() => {
     load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
   const toggleLike = async () => {
@@ -42,6 +57,24 @@ export default function PostDetail() {
     setComments([c.comment, ...comments])
     setCommentText("")
     setPost({ ...post, commentsCount: (post.commentsCount || 0) + 1 })
+  }
+
+  const canEdit = user && (user.role === "admin" || String(user.id || user._id) === String(post?.author?._id))
+  const approve = async () => {
+    await api(`/admin/${post._id}/approve`, { method: "PATCH", token })
+    await load()
+  }
+  const reject = async () => {
+    await api(`/admin/${post._id}/reject`, { method: "PATCH", token })
+    await load()
+  }
+  const hide = async () => {
+    await api(`/admin/${post._id}/hide`, { method: "PATCH", token })
+    await load()
+  }
+  const del = async () => {
+    await api(`/posts/${post._id}`, { method: "DELETE", token })
+    nav("/profile")
   }
 
   if (error)
@@ -60,27 +93,69 @@ export default function PostDetail() {
   return (
     <main className="container">
       <article className="article">
-        <h1 className="title">{post.title}</h1>
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
+          <h1 className="title" style={{ marginBottom: 0 }}>
+            {post.title}
+          </h1>
+          <StatusBadge status={post.status} />
+        </div>
         <p className="muted">
           By {post.author?.name} · {new Date(post.createdAt).toLocaleDateString()}
         </p>
-        <div className="article-actions" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button className="button ghost" onClick={toggleLike}>
+
+        <div className="article-actions" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <Button variant="outline" onClick={toggleLike}>
             ♥ {post.likesCount}
-          </button>
-          {user?.role === 'admin' && post.status === 'pending' && (
-            <button
-              className="button"
-              style={{ background: '#3a86ff', color: '#fff' }}
-              onClick={async () => {
-                await api(`/admin/${post._id}/approve`, { method: 'PATCH', token })
-                window.location.reload()
-              }}
-            >
-              Approve
-            </button>
+          </Button>
+          {canEdit && (
+            <>
+              <Button onClick={() => nav(`/post/${post.slug}/edit`)}>Edit</Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">Delete</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete this post?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently remove the post. You can&apos;t undo this action.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={del}>Delete</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          )}
+          {user?.role === "admin" && (
+            <>
+              {post.status === "pending" && (
+                <>
+                  <Button onClick={approve}>Approve</Button>
+                  <Button variant="outline" onClick={reject}>
+                    Reject
+                  </Button>
+                </>
+              )}
+              {post.status === "published" && (
+                <Button variant="outline" onClick={hide}>
+                  Hide
+                </Button>
+              )}
+            </>
           )}
         </div>
+
+        {post.status !== "published" && canEdit && (
+          <p className="muted" style={{ marginBottom: 10 }}>
+            This post is not published yet. You can still view it as the author
+            {user?.role === "admin" ? " or admin" : ""}.
+          </p>
+        )}
+
         <div className="prose">
           <ReactMarkdown>{post.content}</ReactMarkdown>
         </div>
@@ -88,14 +163,14 @@ export default function PostDetail() {
 
       <section className="section">
         <h2 className="subtitle">Comments ({post.commentsCount || 0})</h2>
-        <form onSubmit={addComment} className="row">
+        <form onSubmit={addComment} className="row" style={{ display: "flex", gap: 8 }}>
           <input
             className="input"
             placeholder="Add a comment"
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
           />
-          <button className="button">Post</button>
+          <Button type="submit">Post</Button>
         </form>
         <ul className="list">
           {comments.map((c) => (

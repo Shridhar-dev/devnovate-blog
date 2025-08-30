@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { api } from "../api"
 import { useAuth } from "../context/AuthContext"
 import { Link } from "react-router-dom"
+import { Button } from "../components/ui/button"
 
 export default function AdminDashboard() {
   const { token } = useAuth()
@@ -38,25 +39,23 @@ export default function AdminDashboard() {
                   View
                 </Link>
               </div>
-              <div className="row">
-                <button className="button" onClick={() => action(p._id, "approve")}>
-                  Approve
-                </button>
-                <button className="button ghost" onClick={() => action(p._id, "reject")}>
+              <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+                <Button onClick={() => action(p._id, "approve")}>Approve</Button>
+                <Button variant="outline" onClick={() => action(p._id, "reject")}>
                   Reject
-                </button>
-                <button className="button ghost" onClick={() => action(p._id, "hide")}>
+                </Button>
+                <Button variant="outline" onClick={() => action(p._id, "hide")}>
                   Hide
-                </button>
-                <button
-                  className="button danger"
+                </Button>
+                <Button
+                  variant="destructive"
                   onClick={async () => {
                     await api(`/admin/${p._id}`, { method: "DELETE", token })
                     load()
                   }}
                 >
                   Delete
-                </button>
+                </Button>
               </div>
             </li>
           ))}

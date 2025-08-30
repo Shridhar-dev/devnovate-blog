@@ -9,49 +9,71 @@ import PostDetail from "./pages/PostDetail"
 import Profile from "./pages/Profile"
 import AdminDashboard from "./pages/AdminDashboard"
 import ProtectedRoute from "./components/ProtectedRoute"
+import Sidebar from "./components/Sidebar"
+import EditProfile from "./pages/EditProfile"
+import EditPost from "./pages/EditPost"
 
 export default function App() {
   return (
     <AuthProvider>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route
-          path="/create"
-          element={
-            <ProtectedRoute>
-              <CreatePost />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute admin>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/post/:slug" element={<PostDetail />} />
-        <Route
-          path="*"
-          element={
-            <main className="container">
-              <h1 className="title">Not found</h1>
-            </main>
-          }
-        />
-      </Routes>
+      <Sidebar />
+      <div className="with-sidebar">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/create"
+            element={
+              <ProtectedRoute>
+                <CreatePost />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/edit"
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/post/:slug/edit"
+            element={
+              <ProtectedRoute>
+                <EditPost />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute admin>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/post/:slug" element={<PostDetail />} />
+          <Route
+            path="*"
+            element={
+              <main className="container">
+                <h1 className="title">Not found</h1>
+              </main>
+            }
+          />
+        </Routes>
+      </div>
     </AuthProvider>
   )
 }
